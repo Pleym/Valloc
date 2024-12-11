@@ -1,16 +1,33 @@
 #ifndef VALLOC_H
 #define VALLOC_H
 
+#define MIN_BLOCK_SIZE 16    // Plus petite taille de bloc (2^4)
+#define SMALL_BLOCK_SIZE 128
+#define NUM_SIZE_CLASSES 9   // Nombre de classes de tailles (de 2^4 à 2^12)
+#define MAX_BLOCK_SIZE 4096  // Plus grande taille de bloc (2^12)
+
+
+
 #include <stddef.h>
 
-// Structure pour stocker les métadonnées de chaque bloc
+
 typedef struct block_header {
-    size_t size;           // Taille du bloc (sans compter l'en-tête)
-    int is_free;          // 1 si le bloc est libre, 0 sinon
+    size_t size;           
+    struct block_header* next;  
+    struct block_header* prev;  
+    int is_free;          
 } block_header_t;
 
-// Fonctions principales de l'allocateur
-void* my_malloc(size_t size);
-void my_free(void* ptr);
+
+typedef struct {
+    block_header_t* free_lists[NUM_SIZE_CLASSES];  
+    void* heap_start;                              
+} memory_manager_t;
+
+
+void* valloc(size_t size);
+void vafree(void* ptr);
+void init_vallocator(void);
+void cleanup_vallocator(void);
 
 #endif // VALLOC_H
