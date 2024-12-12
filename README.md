@@ -1,47 +1,73 @@
-# Allocateur Mémoire Personnalisé
+# Valloc - A High-Performance Memory Allocator
+![Valloc Logo](src/logo.png)
 
-Ce projet implémente un allocateur mémoire personnalisé en C utilisant les appels système `mmap` et `munmap`.
+## Overview
+Valloc is a custom memory allocator implemented in C, designed to provide efficient memory management through `mmap` and `munmap` system calls. It features thread-safe operations and competitive performance compared to standard allocators.
 
-## Fonctionnalités
+## Features
+- Custom memory allocation and deallocation
+- Thread-safe operations with mutex protection
+- Support for various block sizes
+- Performance benchmarking tools
+- Comparative analysis against standard allocators (`malloc`, `calloc`)
 
-- `my_malloc`: Alloue un bloc de mémoire de taille spécifiée
-- `my_free`: Libère un bloc de mémoire précédemment alloué
+## Performance
+![Performance Comparison](performance_comparison.png)
 
-## Compilation et Exécution
+Our latest benchmarks show:
+- Optimal performance for large block sizes (>256KB)
+- Competitive with standard allocators for memory-intensive operations
+- Thread-safe operations with minimal overhead
 
-Pour compiler le projet :
+## Building from Source
+
+### Prerequisites
+- GCC compiler
+- Make build system
+- Python 3.x (for benchmarking)
+- Python packages: pandas, matplotlib (for visualization)
+
+### Installation
 ```bash
-make
+# Clone the repository
+git clone https://github.com/yourusername/valloc.git
+cd valloc
+
+# Build the project
+make all
+
+# Run tests
+make test
 ```
 
-Pour exécuter les tests :
-```bash
-./test
+## Usage
+```c
+#include "valloc.h"
+
+// Initialize the allocator
+valloc_init();
+
+// Allocate memory
+void* ptr = valloc_block(1024);  // Allocate 1024 bytes
+
+// Use the memory
+// ...
+
+// Free the memory
+revalloc(ptr);
+
+// Cleanup
+valloc_bye();
 ```
 
-Pour nettoyer les fichiers compilés :
+## Benchmarking
+The project includes comprehensive benchmarking tools:
 ```bash
-make clean
+# Run performance tests
+./bin/multithread_comparison_test
+
+# Generate visualization
+python3 benchmark/plot_thread_size.py
 ```
 
-## Choix d'Implémentation
 
-### Version de Base
-- Utilisation directe de `mmap` pour chaque allocation
-- Utilisation de `munmap` pour chaque libération
-- Structure d'en-tête pour stocker les métadonnées des blocs
-- Alignement sur la taille de page pour optimiser l'utilisation mémoire
-
-### Points d'Optimisation Possibles
-1. Implémentation d'un cache de blocs libérés
-2. Coalescence des blocs adjacents
-3. Segmentation en classes de tailles
-4. Support multi-thread
-5. Optimisation des métadonnées
-
-## Structure du Code
-
-- `valloc.h`: Déclarations des fonctions et structures
-- `valloc.c`: Implémentation de l'allocateur
-- `test.c`: Programme de test
-- `Makefile`: Script de compilation
