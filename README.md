@@ -1,73 +1,93 @@
-# Valloc - A High-Performance Memory Allocator
-![Valloc Logo](src/logo.png)
+# Valloc - Allocateur de Mémoire Multi-thread avec Cache
 
-## Overview
-Valloc is a custom memory allocator implemented in C, designed to provide efficient memory management through `mmap` and `munmap` system calls. It features thread-safe operations and competitive performance compared to standard allocators.
+## Description
+Valloc est un allocateur de mémoire multi-thread optimisé avec un système de cache local par thread. Il offre des performances améliorées grâce à son mécanisme de recyclage des blocs de mémoire et sa gestion efficace de la contention entre threads.
 
-## Features
-- Custom memory allocation and deallocation
-- Thread-safe operations with mutex protection
-- Support for various block sizes
-- Performance benchmarking tools
-- Comparative analysis against standard allocators (`malloc`, `calloc`)
+## Caractéristiques
+- Cache local par thread pour réduire la contention
+- Recyclage des blocs de mémoire pour minimiser les appels système
+- Support multi-thread avec synchronisation optimisée
+- Gestion efficace des grands blocs de mémoire
+- Outils de benchmarking et tests de performance
+- Comparaison avec les allocateurs standards (`malloc`, `free`)
 
-## Performance
-![Performance Comparison](performance_comparison.png)
-
-Our latest benchmarks show:
-- Optimal performance for large block sizes (>256KB)
-- Competitive with standard allocators for memory-intensive operations
-- Thread-safe operations with minimal overhead
-
-## Building from Source
-
-### Prerequisites
+## Prérequis
 - GCC compiler
 - Make build system
-- Python 3.x (for benchmarking)
-- Python packages: pandas, matplotlib (for visualization)
+- Python >= 3.0 (pour les benchmarks)
+- Python packages: pandas, matplotlib et seaborn (pour la visualisation)
 
-### Installation
+## Installation
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/valloc.git
+git clone [repository-url]
 cd valloc
-
-# Build the project
+#Exécuter les scripts d'installation
 make all
-
-# Run tests
+#Exécuter les tests unitaires
 make test
+#Exécuter les tests de performance
+make perf
 ```
 
-## Usage
+## Utilisation
 ```c
 #include "valloc.h"
 
-// Initialize the allocator
-valloc_init();
+// Initialisation de l'allocateur avec 1000 blocs initiaux et support pour 4 threads
+MemoryAllocator allocator;
+if (valloc_init(&allocator, 1000, 4) != 0) {
+    // Gestion de l'erreur
+    return -1;
+}
 
-// Allocate memory
-void* ptr = valloc_block(1024);  // Allocate 1024 bytes
+// Allocation de mémoire
+void* ptr = valloc_block(&allocator, 1024);  // Alloue 1024 bytes
+if (ptr == NULL) {
+    // Gestion de l'erreur d'allocation
+}
 
-// Use the memory
-// ...
+// Utilisation de la mémoire...
 
-// Free the memory
-revalloc(ptr);
+// Option 1: Recyclage de la mémoire (recommandé pour les allocations fréquentes)
+revalloc(&allocator, ptr);
 
-// Cleanup
-valloc_bye();
+// Option 2: Libération complète de la mémoire
+free_valloc(&allocator, ptr);
+
+// Nettoyage périodique des blocs recyclés (optionnel)
+valloc_cleanup(&allocator);
+
+// Destruction de l'allocateur en fin de programme
+valloc_destroy(&allocator);
 ```
 
-## Benchmarking
-The project includes comprehensive benchmarking tools:
-```bash
-# Run performance tests
-./bin/multithread_comparison_test
+## Tests et Benchmarks
+Le projet inclut plusieurs types de tests :
 
-# Generate visualization
+### Tests Unitaires
+```bash
+make test
+./tests/unit/test_thread_cache
+```
+
+### Tests de Performance
+```bash
+# Test de performance basique
+./tests/perf/basic_perf_test
+
+# Test du cache thread-local
+./tests/perf/benchmark_thread_cache
+
+# Génération des graphiques
+python3 benchmark/plot_results.py
 python3 benchmark/plot_thread_size.py
 ```
 
+## Documentation
+Les sources utilisé pour réaliser ce projet :
+- [Memory Allocation Strategies](https://www.gingerbill.org/series/memory-allocation-strategies/)
+- [Gestion de la Mémoire](https://www.univ-orleans.fr/lifo/membres/Mirian.Halfeld/Cours/SEBlois/SE2007-GestionMemo.pdf)
+- [TCMalloc Design](https://google.github.io/tcmalloc/design.html)
 
+## Rapport
+Pour une analyse des performances et de l'implémentation [rapport complet](Rapport_valoc.pdf).
