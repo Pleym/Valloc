@@ -22,7 +22,7 @@ TEST_EXECUTABLES = $(TEST_SOURCES:.c=)
 PERF_EXECUTABLES = $(PERF_SOURCES:.c=)
 
 # Cibles principales
-.PHONY: all clean test perf
+.PHONY: all clean test perf show_ascii
 
 all: $(TEST_EXECUTABLES) $(PERF_EXECUTABLES)
 
@@ -34,8 +34,15 @@ $(UNIT_DIR)/%: $(UNIT_DIR)/%.c $(SRC)
 $(PERF_DIR)/%: $(PERF_DIR)/%.c $(SRC)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
+# Affichage du logo ASCII
+show_ascii:
+	@if [ -f src/logo_ascii.txt ]; then \
+		cat src/logo_ascii.txt; \
+		echo "\n"; \
+	fi
+
 # Exécution des tests unitaires
-test: $(TEST_EXECUTABLES)
+test: show_ascii $(TEST_EXECUTABLES)
 	@echo "Exécution des tests unitaires..."
 	@for test in $(TEST_EXECUTABLES); do \
 		echo "Exécution de $$test"; \
@@ -43,7 +50,7 @@ test: $(TEST_EXECUTABLES)
 	done
 
 # Exécution des tests de performance
-perf: $(PERF_EXECUTABLES)
+perf: show_ascii $(PERF_EXECUTABLES)
 	@echo "Exécution des tests de performance..."
 	@for test in $(PERF_EXECUTABLES); do \
 		echo "Exécution de $$test"; \
