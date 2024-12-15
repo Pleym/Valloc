@@ -1,4 +1,4 @@
-# Valloc - Allocateur de Mémoire Multi-thread avec Cache
+# Valoc - Allocateur de Mémoire Multi-thread avec Cache
 ![image info](src/logo.png)
 ## Description
 Valloc est un allocateur de mémoire multi-thread optimisé avec un système de cache local par thread. Il offre des performances améliorées grâce à son mécanisme de recyclage des blocs de mémoire et sa gestion efficace de la contention entre threads.
